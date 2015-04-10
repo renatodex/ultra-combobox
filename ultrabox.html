@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <meta charset="utf-8"></meta>
+
+    <style>
+      .ultrabox {
+        background-color:blue;
+        padding:10px;
+      }
+      .ultrabox dd {
+        background-color:#ccc;
+        border:1px solid #000;
+        position:absolute;
+      }
+      .ultrabox dt {
+        color:#fff;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <dl class="ultrabox" data-ultrabox>
+      <dt>Opção 1</dt>
+      <dd>
+        <ul>
+          <li data-value="1">Opção 1</li>
+          <li data-value="2">Opção 2</li>
+          <li data-value="3" data-selected>Opção 3</li>
+        </ul>
+      </dd>
+    </dl>
+
+    <p class="sel">
+      Selected option: <span></span>
+    </p>
+
+    <script src="javascripts/jquery-1.11.js"></script>
+    <script>
+    $(document).ready( function() {
+      var dl = "dl[data-ultrabox]";
+      var dt = "dl[data-ultrabox] dt";
+      var dd = "dl[data-ultrabox] dd";
+      var option = "dl[data-ultrabox] dd ul li";
+      var selected_option = "dl[data-ultrabox] dd ul li[data-selected]";
+
+      var get_dd = function(el) {
+        $(el).children().filter("dd");
+      }
+      var get_dt = function(el) {
+        $(el).children().filter("dt");
+      }
+
+      var set_value = function(el) {
+        $(el.closest("dl")).data('selected_value',el.data("value"));
+        $(el.closest("dl")).data('selected_element',el);
+        el.closest("dl").trigger("change");
+        el.parent().parent().prev().html(el.html());
+      }
+
+      $(dl).each(function(i, el) {
+        if($(el).children().filter("dt").length == 0) {
+          var title = $("<dt></dt>");
+          var first_option = $(el).children().filter("dd").children().filter("ul").children().first();
+          title.html(first_option.html());
+          $(el).prepend(title);
+          set_value(first_option);
+        }
+      });
+
+      $("html").click(function() {
+        $(dd).hide();
+      });
+
+      $(dd).hide();
+      $(dl).bind("click", function(e) {
+        e.stopPropagation();
+        $(this).children().filter("dd").toggle();
+      });
+
+      $(option).bind("click", function(e) {
+        set_value($(this));
+      })
+
+      if($(selected_option).length > 0) {
+        set_value($(selected_option));
+      }
+    });
+    </script>
+
+  </body>
+
+</html>
